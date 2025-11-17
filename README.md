@@ -44,10 +44,10 @@ Aplikasi manajemen klinik berbasis web yang memungkinkan pasien untuk membuat ja
 
 ## 🛠️ Teknologi
 
-- **Framework**: Laravel 10.x
+- **Framework**: Laravel 12.x
 - **Frontend**: 
   - Blade Templates
-  - Tailwind CSS 3.x
+  - Tailwind CSS 4.x
   - Alpine.js
 - **Database**: MySQL
 - **Authentication**: Laravel Breeze
