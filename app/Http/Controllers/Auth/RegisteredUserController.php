@@ -43,16 +43,19 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'patient', // Default role adalah patient
             'phone' => $request->phone,
             'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
             'address' => $request->address,
         ]);
 
+        $user->assignRole('patient');
+
+
         event(new Registered($user));
 
-        Auth::login($user);
+        return redirect()->route('login')->with('success', 'Akun berhasil dibuat. Silakan login.');
+
 
         return redirect()->route('patient.dashboard');
     }

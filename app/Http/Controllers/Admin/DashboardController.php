@@ -13,9 +13,16 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'total_patients' => User::where('role', 'patient')->count(),
+            // COUNT USER DENGAN ROLE "patient"
+            'total_patients' => User::role('patient')->count(),
+
+            // COUNT DOCTOR MODEL
             'total_doctors' => Doctor::count(),
+
+            // COUNT APPOINTMENTS
             'total_appointments' => Appointment::count(),
+
+            // COUNT APPOINTMENT STATUS
             'pending_appointments' => Appointment::where('status', 'pending')->count(),
         ];
 

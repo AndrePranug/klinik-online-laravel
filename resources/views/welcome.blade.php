@@ -27,7 +27,7 @@
                     </div>
                     <div class="flex items-center space-x-4">
                         @auth
-                            <a href="{{ route(auth()->user()->role . '.dashboard') }}" 
+                            <a href="{{ route(auth()->user()->role . 'dashboard') }}" 
                                class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-full font-semibold hover:from-blue-600 hover:to-indigo-700 transition transform hover:scale-105 shadow-md">
                                 Dashboard
                             </a>
@@ -66,7 +66,7 @@
                     </p>
                     <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                         @auth
-                            <a href="{{ route(auth()->user()->role . '.dashboard') }}" 
+                            <a href="{{ route(auth()->user()->role . 'dashboard') }}" 
                                class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:from-blue-600 hover:to-indigo-700 transition transform hover:scale-105 shadow-xl text-center">
                                 Ke Dashboard →
                             </a>
@@ -198,7 +198,7 @@
                     <h2 class="text-4xl font-bold mb-4">Siap Memulai Konsultasi? 💙</h2>
                     <p class="text-xl mb-8 text-blue-100">Bergabunglah dengan ribuan pengguna yang telah merasakan kemudahan layanan kami</p>
                     @auth
-                        <a href="{{ route(auth()->user()->role . '.dashboard') }}" 
+                        <a href="{{ route(auth()->user()->role . 'dashboard') }}" 
                            class="inline-block bg-white text-blue-600 px-10 py-4 rounded-full text-lg font-bold hover:bg-blue-50 transition transform hover:scale-105 shadow-xl">
                             Ke Dashboard →
                         </a>

@@ -87,6 +87,15 @@
                         <span class="ml-3 font-medium">Janji Temu</span>
                     </a>
 
+                    <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 text-blue-100 hover:bg-white/10 rounded-lg transition-all duration-200 group {{ request()->routeIs('admin.users.*') ? 'bg-white/15 text-white shadow-lg' : '' }}">
+                        <div class="p-2 rounded-lg {{ request()->routeIs('admin.users.*') ? 'bg-blue-500' : 'bg-blue-700/50 group-hover:bg-blue-600' }} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">User Management</span>
+                    </a>
+
                     <!-- Divider -->
                     <div class="border-t border-blue-700/50 my-4 mx-2"></div>
 
@@ -100,17 +109,6 @@
                         <span class="ml-3 font-medium">Pengaturan</span>
                     </a>
 
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="flex items-center w-full px-4 py-3 text-blue-100 hover:bg-red-500/20 rounded-lg transition-all duration-200 group">
-                            <div class="p-2 rounded-lg bg-blue-700/50 group-hover:bg-red-500 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                            </div>
-                            <span class="ml-3 font-medium">Logout</span>
-                        </button>
-                    </form>
                 </nav>
 
                 <!-- Footer -->

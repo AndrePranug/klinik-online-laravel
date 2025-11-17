@@ -13,22 +13,24 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin
-        User::create([
+        $admin = User::create([
             'name' => 'Admin Klinik',
             'email' => 'admin@klinik.com',
             'password' => Hash::make('password'),
-            'role' => 'admin',
             'phone' => '081234567890',
+            'email_verified_at' => now(),
         ]);
+        $admin->assignRole('admin'); // GUNAKAN SPATIE
 
         // Dokter 1
         $doctor1 = User::create([
             'name' => 'Dr. Budi Santoso',
             'email' => 'budi@klinik.com',
             'password' => Hash::make('password'),
-            'role' => 'doctor',
             'phone' => '081234567891',
+            'email_verified_at' => now(),
         ]);
+        $doctor1->assignRole('doctor'); // GUNAKAN SPATIE
 
         $doctorProfile1 = Doctor::create([
             'user_id' => $doctor1->id,
@@ -60,9 +62,10 @@ class UserSeeder extends Seeder
             'name' => 'Dr. Siti Aminah, Sp.A',
             'email' => 'siti@klinik.com',
             'password' => Hash::make('password'),
-            'role' => 'doctor',
             'phone' => '081234567892',
+            'email_verified_at' => now(),
         ]);
+        $doctor2->assignRole('doctor'); // GUNAKAN SPATIE
 
         $doctorProfile2 = Doctor::create([
             'user_id' => $doctor2->id,
@@ -90,15 +93,16 @@ class UserSeeder extends Seeder
         ]);
 
         // Pasien
-        User::create([
+        $patient = User::create([
             'name' => 'Ahmad Patient',
             'email' => 'patient@gmail.com',
             'password' => Hash::make('password'),
-            'role' => 'patient',
             'phone' => '081234567893',
             'date_of_birth' => '1990-01-01',
             'gender' => 'male',
             'address' => 'Jl. Contoh No. 123',
+            'email_verified_at' => now(),
         ]);
+        $patient->assignRole('patient'); // GUNAKAN SPATIE
     }
 }

@@ -512,7 +512,7 @@ php artisan view:clear
 
 ## 📝 Changelog
 
-### Version 1.0.0 (2024)
+### Version 1.0.0 (2025)
 - ✅ Initial release
 - ✅ Multi-role system (Admin, Doctor, Patient)
 - ✅ Appointment management

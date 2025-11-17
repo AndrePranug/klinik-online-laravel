@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="text-xl font-bold text-blue-600">
+                    <a href="{{ route(auth()->user()->role . 'dashboard') }}" class="text-xl font-bold text-blue-600">
                         Klinik Online
                     </a>
                 </div>
