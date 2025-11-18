@@ -10,13 +10,12 @@ Aplikasi manajemen klinik berbasis web yang memungkinkan pasien untuk membuat ja
 - [Teknologi](#teknologi)
 - [Persyaratan Sistem](#persyaratan-sistem)
 - [Instalasi](#instalasi)
-- [Konfigurasi](#konfigurasi)
+- [Konfigurasi Email (Mailtrap)](#konfigurasi-email-mailtrap)
 - [Database Schema](#database-schema)
 - [Role & Permission](#role--permission)
 - [Fitur Detail](#fitur-detail)
 - [Penggunaan](#penggunaan)
 - [Troubleshooting](#troubleshooting)
-- [Lisensi](#lisensi)
 
 ---
 
@@ -24,12 +23,14 @@ Aplikasi manajemen klinik berbasis web yang memungkinkan pasien untuk membuat ja
 
 ### 👤 Untuk Pasien
 - ✅ Registrasi dan login akun
+- ✅ Reset password via email
 - ✅ Melihat daftar dokter berdasarkan spesialisasi
 - ✅ Membuat janji temu dengan dokter
 - ✅ Melihat riwayat janji temu
 - ✅ Melihat diagnosis dan resep dari dokter
 
 ### 👨‍⚕️ Untuk Dokter
+- ✅ Reset password via email
 - ✅ Manajemen jadwal praktik (CRUD)
 - ✅ Melihat daftar janji temu pasien
 - ✅ Konfirmasi janji temu
@@ -38,6 +39,7 @@ Aplikasi manajemen klinik berbasis web yang memungkinkan pasien untuk membuat ja
 - ✅ Dashboard statistik
 
 ### 👨‍💼 Untuk Admin
+- ✅ Reset password via email
 - ✅ Manajemen dokter (CRUD)
 - ✅ Manajemen spesialisasi (CRUD)
 - ✅ Manajemen user (CRUD)
@@ -51,11 +53,12 @@ Aplikasi manajemen klinik berbasis web yang memungkinkan pasien untuk membuat ja
 
 | Kategori | Teknologi |
 |----------|-----------|
-| **Framework** | Laravel 11.x |
+| **Framework** | Laravel 12.x |
 | **Frontend** | Blade Templates, Tailwind CSS, Alpine.js |
 | **Database** | MySQL 8.3 |
 | **Authentication** | Laravel Breeze |
 | **Authorization** | Spatie Laravel Permission |
+| **Email Service** | Mailtrap (Development) |
 | **Package Manager** | Composer & NPM |
 | **PHP Version** | 8.3.22 |
 
@@ -131,7 +134,12 @@ npm run dev
 npm run build
 ```
 
-### 7. Jalankan Aplikasi
+### 7. Storage Link
+```bash
+php artisan storage:link
+```
+
+### 8. Jalankan Aplikasi
 ```bash
 php artisan serve
 ```
@@ -140,21 +148,98 @@ Aplikasi akan berjalan di `http://localhost:8000`
 
 ---
 
-## ⚙️ Konfigurasi
+## 📧 Konfigurasi Email (Mailtrap)
 
-### Storage Link
+Sistem ini menggunakan Mailtrap untuk testing email di environment development, terutama untuk fitur **reset password**.
 
-Buat symbolic link untuk storage:
-```bash
-php artisan storage:link
+### Setup Mailtrap
+
+1. **Buat Akun Mailtrap**
+   - Kunjungi [https://mailtrap.io](https://mailtrap.io)
+   - Daftar akun gratis (Free plan sudah cukup)
+   - Verifikasi email Anda
+
+2. **Dapatkan Kredensial SMTP**
+   - Login ke dashboard Mailtrap
+   - Pilih inbox Anda (atau buat inbox baru)
+   - Klik tab **"SMTP Settings"**
+   - Pilih **"Laravel 9+"** dari dropdown integrations
+   - Copy kredensial yang diberikan
+
+3. **Konfigurasi File `.env`**
+
+Edit file `.env` dan tambahkan/update konfigurasi email:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="noreply@klinik-online.com"
+MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-### Cache Optimization (Production)
-```bash
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+**Ganti nilai berikut:**
+- `MAIL_USERNAME` → Username dari Mailtrap
+- `MAIL_PASSWORD` → Password dari Mailtrap
+
+### Testing Email
+
+Setelah konfigurasi, test dengan fitur reset password:
+
+1. Buka halaman login
+2. Klik **"Forgot Password?"**
+3. Masukkan email user yang terdaftar (contoh: `patient@gmail.com`)
+4. Klik **"Email Password Reset Link"**
+5. Buka dashboard Mailtrap Anda
+6. Email reset password akan muncul di inbox
+
+### Email yang Dikirim Sistem
+
+| Fitur | Deskripsi | Template |
+|-------|-----------|----------|
+| **Password Reset** | Email berisi link untuk reset password | `auth.passwords.email` |
+| **Email Verification** | Verifikasi email saat registrasi (opsional) | `auth.verify-email` |
+
+### Konfigurasi untuk Production
+
+#### Menggunakan Gmail SMTP:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="noreply@klinik-online.com"
+MAIL_FROM_NAME="Klinik Online"
 ```
+
+#### Menggunakan SendGrid:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.sendgrid.net
+MAIL_PORT=587
+MAIL_USERNAME=apikey
+MAIL_PASSWORD=your-sendgrid-api-key
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="noreply@klinik-online.com"
+MAIL_FROM_NAME="Klinik Online"
+```
+
+### Test Email Manual
+```bash
+php artisan tinker
+```
+```php
+Mail::raw('Test email from Klinik Online', function ($message) {
+    $message->to('test@example.com')
+            ->subject('Test Email');
+});
+```
+
+Cek inbox Mailtrap Anda untuk melihat email test.
 
 ---
 
@@ -176,6 +261,16 @@ php artisan view:cache
 | `remember_token` | varchar(100) | Token untuk remember me (nullable) |
 | `created_at` | timestamp | Waktu dibuat (nullable) |
 | `updated_at` | timestamp | Waktu diupdate (nullable) |
+
+### Tabel Password_Reset_Tokens
+
+| Kolom | Tipe Data | Keterangan |
+|-------|-----------|------------|
+| `email` | varchar(255) | Email user (Primary Key) |
+| `token` | varchar(255) | Token reset password terenkripsi |
+| `created_at` | timestamp | Waktu token dibuat (nullable) |
+
+**Note**: Token akan expired dalam 60 menit setelah dibuat.
 
 ### Tabel Specializations
 
@@ -434,7 +529,7 @@ Database sudah berisi user default berikut:
 ### 1. Sistem Autentikasi
 - Login/Register dengan Laravel Breeze
 - Email verification (opsional)
-- Password reset
+- Password reset via email (Mailtrap)
 - Profile management
 
 ### 2. Dashboard Admin
@@ -461,14 +556,12 @@ Database sudah berisi user default berikut:
 - 🗑️ Hapus spesialisasi
 - 📊 Jumlah dokter per spesialisasi
 - 🎨 Card-based layout
-- Spesialisasi tersedia: Umum, Gigi, Anak, Jantung, Kulit
 
 ### 5. Manajemen Jadwal (Dokter)
 - 📅 Atur jadwal praktik per hari (Senin-Minggu)
 - ⏰ Set waktu mulai dan selesai
 - 🕐 Tentukan durasi slot konsultasi (default: 30 menit)
 - 📊 Hitung otomatis jumlah slot tersedia
-- 🎨 Card layout dengan visual yang menarik
 
 ### 6. Booking Janji Temu (Pasien)
 - 🔍 Pilih dokter berdasarkan spesialisasi
@@ -498,9 +591,13 @@ Database sudah berisi user default berikut:
 - 🔐 Reset password user
 - 🔍 Filter berdasarkan role (Admin/Doctor/Patient)
 - 🔎 Pencarian berdasarkan nama atau email
-- 📊 Statistik user per role
-- 📋 Detail lengkap profil user
-- 🎨 Modern UI dengan card layout
+
+### 10. Reset Password
+- 📧 Kirim link reset password via email
+- 🔒 Token expired dalam 60 menit
+- ✉️ Email template profesional
+- 🔐 Validasi token keamanan
+- ✅ Konfirmasi password baru
 
 ---
 
@@ -508,20 +605,30 @@ Database sudah berisi user default berikut:
 
 ### Sebagai Admin
 
-1. **Login** ke sistem dengan akun admin (`admin@klinik.com`)
-2. **Dashboard** - Lihat statistik sistem
+1. **Login** ke sistem dengan akun admin (`admin@klinik.com`, password: `password`)
+
+2. **Dashboard** 
+   - Lihat statistik sistem secara real-time
+   - Quick access ke fitur utama
+
 3. **Kelola Dokter**:
    - Klik "Manajemen Dokter" di sidebar
    - Tambah dokter baru dengan klik "Tambah Dokter"
    - Edit atau hapus dokter yang ada
+   - Filter berdasarkan spesialisasi
+
 4. **Kelola Spesialisasi**:
    - Klik "Spesialisasi" di sidebar
    - Tambah spesialisasi baru
    - Edit atau hapus spesialisasi
+   - Lihat jumlah dokter per spesialisasi
+
 5. **Kelola User**:
    - Klik "Manajemen User" di sidebar
    - Tambah user baru (Admin/Doctor/Patient)
    - Edit atau hapus user
+   - Filter berdasarkan role
+
 6. **Monitor Janji Temu**:
    - Klik "Janji Temu" di sidebar
    - Filter berdasarkan status atau tanggal
@@ -529,35 +636,61 @@ Database sudah berisi user default berikut:
 
 ### Sebagai Dokter
 
-1. **Login** dengan akun dokter (`budi@klinik.com` atau `siti@klinik.com`)
+1. **Login** dengan akun dokter (`budi@klinik.com` atau `siti@klinik.com`, password: `password`)
+
 2. **Atur Jadwal Praktik**:
    - Klik "Jadwal Praktik" di sidebar
    - Tambah jadwal untuk setiap hari
-   - Tentukan waktu dan durasi slot
+   - Tentukan waktu mulai dan selesai
+   - Set durasi slot konsultasi
+
 3. **Kelola Janji Temu**:
    - Lihat daftar janji temu di dashboard
    - Konfirmasi janji temu yang pending
-   - Klik "Detail" untuk melihat info lengkap
+   - Klik "Detail" untuk melihat info lengkap pasien
+
 4. **Input Diagnosis**:
    - Buka detail janji temu
    - Klik "Selesaikan Konsultasi"
-   - Input diagnosis dan resep
-   - Simpan dan selesaikan
+   - Input diagnosis dan resep obat
+   - Simpan dan tandai sebagai selesai
 
 ### Sebagai Pasien
 
-1. **Register** atau **Login** (`patient@gmail.com` atau `sinta@gmail.com`)
+1. **Register** akun baru atau **Login** (`patient@gmail.com` atau `sinta@gmail.com`, password: `password`)
+
 2. **Cari Dokter**:
-   - Pilih spesialisasi yang dibutuhkan
-   - Lihat daftar dokter tersedia
+   - Lihat daftar dokter di dashboard
+   - Filter berdasarkan spesialisasi yang dibutuhkan
+   - Lihat info dokter (bio, pengalaman, biaya konsultasi)
+
 3. **Buat Janji Temu**:
    - Klik "Buat Janji" pada dokter pilihan
-   - Pilih tanggal dan waktu
-   - Isi keluhan
+   - Pilih tanggal konsultasi
+   - Pilih slot waktu yang tersedia
+   - Isi keluhan Anda
    - Konfirmasi booking
+   - Dapatkan nomor antrian
+
 4. **Lihat Riwayat**:
-   - Cek status janji temu
+   - Klik "Riwayat Konsultasi" di sidebar
+   - Cek status janji temu (pending/confirmed/completed/cancelled)
    - Lihat diagnosis dan resep jika sudah selesai
+   - Filter berdasarkan status
+
+### Reset Password (Semua Role)
+
+1. Di halaman login, klik **"Forgot Password?"**
+2. Masukkan email yang terdaftar di sistem
+3. Klik **"Email Password Reset Link"**
+4. Buka email di **Mailtrap inbox** (development) atau email Anda (production)
+5. Klik link reset password di email
+6. Masukkan password baru (minimal 8 karakter)
+7. Konfirmasi password baru
+8. Klik **"Reset Password"**
+9. Login dengan password baru Anda
+
+**Note:** Link reset password akan expired dalam 60 menit. Jika sudah expired, request ulang.
 
 ---
 
@@ -567,31 +700,63 @@ Database sudah berisi user default berikut:
 ```bash
 composer require spatie/laravel-permission
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan migrate
 ```
 
 ### Error: npm run dev tidak jalan
 ```bash
+# Hapus folder node_modules dan package-lock.json
+rm -rf node_modules package-lock.json
+
+# Install ulang
 npm install
+
+# Build assets
 npm run build
 ```
 
 ### Error: Storage link tidak berfungsi
 ```bash
+# Buat symbolic link
+php artisan storage:link
+
+# Jika masih error, hapus link lama dulu
+rm public/storage
 php artisan storage:link
 ```
 
 ### Error: Permission denied
 ```bash
+# Linux/Mac
 chmod -R 775 storage
 chmod -R 775 bootstrap/cache
+
+# Atau
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
 ```
 
-### Clear Cache
+### Email tidak terkirim
+
+| Masalah | Solusi |
+|---------|--------|
+| Connection refused | Periksa `MAIL_HOST` dan `MAIL_PORT` di `.env` |
+| Authentication failed | Verifikasi `MAIL_USERNAME` dan `MAIL_PASSWORD` dari Mailtrap |
+| Email tidak muncul di inbox | Refresh halaman Mailtrap inbox, cek spam folder |
+| Link reset expired | Link valid 60 menit, request link baru |
+| Port blocked | Cek firewall, pastikan port 2525 tidak diblokir |
+
+### Reset Password tidak bekerja
 ```bash
+# Clear semua cache
 php artisan cache:clear
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
+
+# Test email configuration
+php artisan tinker
+Mail::raw('Test', function($m) { $m->to('test@test.com')->subject('Test'); });
 ```
 
 ### Database Import Error
@@ -600,12 +765,53 @@ php artisan view:clear
 |---------|--------|
 | Database tidak ditemukan | Buat database `klinik_online` terlebih dahulu |
 | Access denied | Pastikan user MySQL memiliki privilege penuh |
-| File corrupt | Download ulang file SQL |
-| Version mismatch | Gunakan MySQL >= 8.0 |
+| Syntax error | Pastikan menggunakan MySQL >= 8.0 |
+| File corrupt | Download ulang file SQL dari repository |
+| Character encoding | Set charset ke `utf8mb4_unicode_ci` |
+
+### Clear All Cache
+```bash
+# Clear application cache
+php artisan cache:clear
+
+# Clear configuration cache
+php artisan config:clear
+
+# Clear route cache
+php artisan route:clear
+
+# Clear compiled views
+php artisan view:clear
+
+# Clear compiled classes
+php artisan clear-compiled
+
+# Optimize untuk production
+php artisan optimize
+```
+
+### Rebuild Assets
+```bash
+# Development mode dengan hot reload
+npm run dev
+
+# Production build (minified)
+npm run build
+
+# Watch mode untuk development
+npm run watch
+```
 
 ---
 
 ## 📝 Changelog
+
+### Version 1.1.0 (November 2025)
+- ✅ Added Mailtrap integration for email testing
+- ✅ Password reset functionality via email
+- ✅ Email template for password reset
+- ✅ Token expiration system (60 minutes)
+- ✅ Improved email configuration documentation
 
 ### Version 1.0.0 (November 2025)
 - ✅ Initial release
@@ -639,18 +845,20 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- Laravel Framework
-- Spatie Laravel Permission
-- Tailwind CSS
-- Alpine.js
-- Heroicons
-- MySQL
+Terima kasih kepada:
+- **Laravel Framework** - PHP framework yang powerful dan elegant
+- **Spatie Laravel Permission** - Package untuk role dan permission management
+- **Tailwind CSS** - Utility-first CSS framework
+- **Alpine.js** - Lightweight JavaScript framework
+- **Heroicons** - Beautiful hand-crafted SVG icons
+- **MySQL** - Reliable database management system
+- **Mailtrap** - Email testing service
 
 ---
 
 ## 📞 Support
 
-Jika ada pertanyaan atau masalah, silakan:
+Jika ada pertanyaan, bug, atau saran, silakan hubungi:
 
 | Channel | Link/Contact |
 |---------|--------------|
@@ -659,7 +867,3 @@ Jika ada pertanyaan atau masalah, silakan:
 | **Documentation** | [Wiki](https://github.com/username/klinik-online/wiki) |
 
 ---
-
-**Dibuat dengan ❤️ menggunakan Laravel & Tailwind CSS**
-
-**Last Updated**: November 18, 2025
