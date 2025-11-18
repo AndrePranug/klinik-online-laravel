@@ -220,8 +220,7 @@
                     <p class="text-gray-400">Sistem Antrian & Reservasi Dokter Modern</p>
                 </div>
                 <div class="border-t border-gray-800 pt-6">
-                    <p class="text-gray-400">&copy; 2024 Klinik Online. All rights reserved.</p>
-                    <p class="text-sm text-gray-500 mt-2">Dibuat dengan ❤️ menggunakan Laravel & Tailwind CSS</p>
+                    <p class="text-gray-400">&copy; 2025 Klinik Online. All rights reserved.</p>
                 </div>
             </div>
         </footer>
